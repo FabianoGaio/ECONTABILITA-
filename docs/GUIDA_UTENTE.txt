@@ -1,0 +1,531 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║         eCONTABILITÀ — GUIDA UTENTE                                ║
+║         Come funziona e come utilizzare la piattaforma              ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════
+1. COS'È eCONTABILITÀ
+═══════════════════════════════════════════════════════════════════════
+
+eContabilità è una piattaforma web didattica per lo studio della
+contabilità generale e del bilancio aziendale.
+
+Permette di:
+  • Consultare un piano dei conti conforme ai principi OIC
+  • Registrare operazioni contabili in partita doppia
+  • Gestire scritture di assestamento di fine esercizio
+  • Visualizzare il bilancio completo (SP, CE, CF)
+  • Analizzare il bilancio tramite riclassificazione e indici
+  • Simulare analisi gestionali (break-even, budget)
+  • Generare un fac-simile PDF del bilancio ufficiale
+
+Il progetto funziona in due modalità:
+  DEMO  → Dati precaricati, pronto all'uso senza configurazione
+  LIVE  → Collegato a Supabase con database reale e autenticazione
+
+
+═══════════════════════════════════════════════════════════════════════
+2. INSTALLAZIONE E AVVIO
+═══════════════════════════════════════════════════════════════════════
+
+PREREQUISITI:
+  • Node.js 18 o superiore (https://nodejs.org)
+  • Un browser moderno (Chrome, Firefox, Safari, Edge)
+
+PASSI:
+
+  1. Apri il terminale nella cartella del progetto
+
+  2. Installa le dipendenze:
+     npm install
+
+  3. Avvia il server di sviluppo:
+     npm run dev
+
+  4. Apri il browser su:
+     http://localhost:3000
+
+  Il progetto parte in MODALITÀ DEMO con dati di esempio
+  per l'esercizio 2025. Non serve configurare nulla.
+
+CONFIGURAZIONE SUPABASE (opzionale, per dati persistenti):
+
+  1. Crea un progetto su https://supabase.com
+  2. Nel SQL Editor esegui il file supabase/schema.sql
+  3. Modifica il file .env.local:
+     NEXT_PUBLIC_SUPABASE_URL=https://tuo-progetto.supabase.co
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=la-tua-chiave-anon
+  4. Riavvia il server (Ctrl+C poi npm run dev)
+
+
+═══════════════════════════════════════════════════════════════════════
+3. NAVIGAZIONE — PANORAMICA DELLE SEZIONI
+═══════════════════════════════════════════════════════════════════════
+
+La barra laterale sinistra contiene tutte le sezioni:
+
+  ┌─────────────────────────────────────────────┐
+  │  GENERALE                                   │
+  │    📊 Dashboard           Panoramica KPI     │
+  │    📋 Piano dei Conti     Elenco conti OIC   │
+  │                                             │
+  │  CONTABILITÀ                                │
+  │    📝 Prima Nota          Partita doppia     │
+  │    📐 Scritture Assest.   Fine esercizio     │
+  │                                             │
+  │  BILANCIO                                   │
+  │    🏛️ Stato Patrimoniale  Art. 2424 c.c.    │
+  │    📈 Conto Economico     Art. 2425 c.c.    │
+  │    💰 Rendiconto Fin.     OIC 10            │
+  │                                             │
+  │  ANALISI                                    │
+  │    🔄 Riclassificazione   Impieghi/Fonti    │
+  │    📉 Indici di Bilancio  ROE, ROI, ecc.    │
+  │    🎯 Analisi Gestionale  Break-even        │
+  │    📅 Budget              Pianificazione     │
+  │                                             │
+  │  DOCUMENTI                                  │
+  │    📄 Genera Bilancio PDF Fac-simile CCIAA  │
+  └─────────────────────────────────────────────┘
+
+La sidebar è collassabile cliccando la freccia ← in alto.
+Il selettore "Esercizio" in alto a destra cambia l'anno di riferimento.
+
+
+═══════════════════════════════════════════════════════════════════════
+4. DASHBOARD DIREZIONALE (pagina iniziale)
+═══════════════════════════════════════════════════════════════════════
+
+La dashboard mostra a colpo d'occhio:
+
+  RIGA KPI (6 indicatori):
+  ┌────────┬────────┬────────┬────────┬────────┬────────┐
+  │ Ricavi │ EBITDA │ Utile  │ Cash   │ ROE    │Current │
+  │        │        │ Netto  │ Flow   │   %    │ Ratio  │
+  └────────┴────────┴────────┴────────┴────────┴────────┘
+
+  ALERT QUADRATURA:
+  ✓ Verde se Attivo = Passivo | ✗ Rosso se non quadra
+
+  GRAFICI:
+  • Margini CE (barre: Ricavi → Costi → EBITDA → EBIT → Utile)
+  • Flussi di Cassa (barre: operativo, investimenti, finanziamenti)
+  • Composizione Attivo (torta)
+  • Composizione Passivo (torta)
+  • Indici Redditività (barre orizzontali)
+
+  RIEPILOGO TABELLARE:
+  • Stato Patrimoniale sintetico
+  • Conto Economico sintetico
+
+
+═══════════════════════════════════════════════════════════════════════
+5. PIANO DEI CONTI
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  Elenco completo dei 60 conti contabili conformi agli standard OIC.
+  Ogni conto ha: codice, nome, categoria, sottocategoria, sezione
+  bilancio e riferimento alla voce ufficiale OIC.
+
+COME USARLO:
+  • Usa la barra di ricerca per trovare un conto per nome o codice
+  • Filtra per categoria (Attivo, Passivo, PN, Ricavi, Costi)
+  • Filtra per sezione bilancio (SP Attivo, SP Passivo, CE)
+  • Clicca "+ Nuovo Conto" per aggiungere un conto personalizzato
+    (disponibile solo con Supabase configurato)
+
+CODIFICA DEI CONTI:
+  1.x.xx = Immobilizzazioni (attivo fisso)
+  2.x.xx = Attivo circolante
+  3.x.xx = Passivo e patrimonio netto
+  4.x.xx = Ricavi
+  5.x.xx = Costi
+
+
+═══════════════════════════════════════════════════════════════════════
+6. PRIMA NOTA — REGISTRAZIONE OPERAZIONI
+═══════════════════════════════════════════════════════════════════════
+
+COSA FA:
+  Permette di registrare operazioni contabili in partita doppia.
+  Ogni scrittura deve QUADRARE: totale dare = totale avere.
+
+COME REGISTRARE UNA SCRITTURA:
+
+  1. Clicca "+ Nuova Scrittura"
+  2. Inserisci data e descrizione
+  3. Per ogni riga, seleziona:
+     • Il conto dal piano dei conti
+     • Se va in DARE o AVERE
+     • L'importo
+  4. Aggiungi righe con "+ Aggiungi riga" se servono più di 2
+  5. Controlla l'indicatore di quadratura in basso:
+     ✓ Verde = la scrittura quadra → puoi salvare
+     ✗ Giallo = non quadra → correggi prima di salvare
+  6. Clicca "Registra Scrittura"
+
+ESEMPIO: Vendita merce a credito per €10.000
+  Riga 1: Crediti vs clienti    DARE    €10.000
+  Riga 2: Ricavi vendite        AVERE   €10.000
+
+FILTRI DISPONIBILI:
+  • Cerca per descrizione o nome conto
+  • Seleziona esercizio di riferimento
+  • In fondo: totale dare e avere con verifica quadratura globale
+
+DATI DEMO PRECARICATI (esercizio 2025):
+  • Conferimento capitale €100.000
+  • Vendite per €200.000
+  • Acquisti materie prime €65.000
+  • Stipendi e oneri sociali €19.500
+  • Utenze e affitti €9.000
+  • Acquisto macchinario €80.000
+  • Rimanenze finali €25.000
+
+
+═══════════════════════════════════════════════════════════════════════
+7. SCRITTURE DI ASSESTAMENTO
+═══════════════════════════════════════════════════════════════════════
+
+COSA SONO:
+  Rettifiche di fine esercizio per rispettare il principio di
+  competenza economica. Si registrano al 31/12.
+
+TIPI DISPONIBILI:
+
+  AMMORTAMENTO
+  │ Ripartizione del costo di un'immobilizzazione sulla vita utile.
+  │ Es: Macchinario €80.000, vita utile 10 anni → €8.000/anno
+  │ Dare: Ammortamento immob. materiali
+  │ Avere: Fondo amm.to immob. materiali
+
+  RATEO ATTIVO
+  │ Ricavo di competenza dell'esercizio non ancora rilevato.
+  │ Es: Interessi attivi maturati ma non incassati.
+  │ Dare: Ratei attivi
+  │ Avere: Proventi finanziari
+
+  RATEO PASSIVO
+  │ Costo di competenza dell'esercizio non ancora rilevato.
+  │ Es: Interessi su mutuo maturati ma non pagati.
+  │ Dare: Interessi passivi
+  │ Avere: Ratei passivi
+
+  RISCONTO ATTIVO
+  │ Costo già rilevato ma di competenza dell'esercizio successivo.
+  │ Es: Affitto pagato in anticipo per il trimestre successivo.
+  │ Dare: Risconti attivi
+  │ Avere: Affitti passivi (storno)
+
+  RISCONTO PASSIVO
+  │ Ricavo già rilevato ma di competenza dell'esercizio successivo.
+  │ Es: Canone incassato in anticipo.
+  │ Dare: Ricavi (storno)
+  │ Avere: Risconti passivi
+
+  ACCANTONAMENTO
+  │ Fondo per rischi e oneri futuri probabili.
+  │ Es: Causa legale in corso, rischio probabile.
+  │ Dare: Accantonamento fondi rischi
+  │ Avere: Fondi rischi
+
+COME USARLO:
+  1. Clicca "+ Nuova Scrittura"
+  2. Seleziona il tipo → i conti dare/avere vengono suggeriti
+  3. Inserisci importo e descrizione
+  4. Clicca "Registra"
+  5. Il riepilogo per tipo mostra totali e conteggi
+
+  Il pulsante "? Guida" mostra le definizioni di ogni tipo.
+
+DATI DEMO PRECARICATI:
+  • Ammortamento impianti €8.000
+  • Ammortamento brevetti €2.000
+  • Accantonamento TFR €3.500
+  • Accantonamento fondi rischi €2.000
+  • Risconto attivo affitto €2.000
+  • Rateo passivo interessi €1.500
+
+
+═══════════════════════════════════════════════════════════════════════
+8. BILANCIO — STATO PATRIMONIALE
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  Lo Stato Patrimoniale secondo lo schema civilistico art. 2424 c.c.
+  Diviso in due colonne affiancate: ATTIVO e PASSIVO.
+
+STRUTTURA ATTIVO:
+  B) IMMOBILIZZAZIONI
+     B.I   Immobilizzazioni immateriali
+     B.II  Immobilizzazioni materiali
+     B.III Immobilizzazioni finanziarie
+  C) ATTIVO CIRCOLANTE
+     C.I   Rimanenze
+     C.II  Crediti
+     C.IV  Disponibilità liquide
+  D) RATEI E RISCONTI ATTIVI
+  ─────────────────────────
+  TOTALE ATTIVO
+
+STRUTTURA PASSIVO:
+  A) PATRIMONIO NETTO
+     A.I     Capitale
+     A.IV/VII Riserve
+     A.IX    Utile (perdita) d'esercizio
+  B) FONDI PER RISCHI E ONERI
+  C) TFR
+  D) DEBITI
+     Debiti finanziari
+     Debiti commerciali
+  E) RATEI E RISCONTI PASSIVI
+  ─────────────────────────
+  TOTALE PASSIVO
+
+In alto: indicatore di quadratura (verde/rosso).
+
+
+═══════════════════════════════════════════════════════════════════════
+9. BILANCIO — CONTO ECONOMICO
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  Il Conto Economico secondo lo schema civilistico art. 2425 c.c.
+  con i margini intermedi di gestione.
+
+STRUTTURA:
+  A) VALORE DELLA PRODUZIONE
+     1) Ricavi vendite e prestazioni
+     2) Variazioni rimanenze
+     5) Altri ricavi
+  B) COSTI DELLA PRODUZIONE
+     6) Materie prime
+     7) Servizi
+     8) Godimento beni di terzi
+     9) Personale
+     10) Ammortamenti
+     12-14) Altri costi
+
+  → EBITDA (Margine Operativo Lordo)
+  → EBIT (Differenza A-B)
+
+  C) PROVENTI E ONERI FINANZIARI
+     16) Proventi finanziari
+     17) Oneri finanziari
+
+  → Risultato prima delle imposte
+  20) Imposte
+  → UTILE (PERDITA) DELL'ESERCIZIO
+
+Sulla destra: grafico a barre dei margini + incidenza % su ricavi.
+
+
+═══════════════════════════════════════════════════════════════════════
+10. BILANCIO — RENDICONTO FINANZIARIO
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  I flussi di cassa con metodo indiretto (OIC 10).
+
+STRUTTURA:
+  A) FLUSSI DA ATTIVITÀ OPERATIVA
+     Utile + ammortamenti ± variazioni del capitale circolante
+     → Cash flow operativo
+
+  B) FLUSSI DA ATTIVITÀ DI INVESTIMENTO
+     Investimenti in immobilizzazioni
+     → Cash flow investimenti
+
+  C) FLUSSI DA ATTIVITÀ DI FINANZIAMENTO
+     Variazione debiti finanziari e patrimonio
+     → Cash flow finanziamenti
+
+  → VARIAZIONE NETTA LIQUIDITÀ (A + B + C)
+
+Sulla destra: grafico a barre con colori verde/rosso.
+Legenda didattica in basso che spiega ogni sezione.
+
+
+═══════════════════════════════════════════════════════════════════════
+11. RICLASSIFICAZIONE DI BILANCIO
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  Bilancio riclassificato con criterio finanziario (impieghi/fonti)
+  e Conto Economico a valore aggiunto.
+
+IMPIEGHI (sinistra):               FONTI (destra):
+  Attivo fisso                       Patrimonio netto
+  Capitale circolante lordo          Passività consolidate (M/L)
+  Liquidità immediate                Passività correnti (breve)
+  ──────────────────                 ──────────────────
+  TOTALE IMPIEGHI                    TOTALE FONTI
+
+INDICATORI CHIAVE:
+  • CCN (Capitale Circolante Netto) = Att.corrente - Pass.correnti
+  • Margine di Struttura = (PN + Pass.consol.) - Attivo fisso
+
+  CCN > 0 → l'azienda copre i debiti a breve con l'attivo corrente
+  Margine > 0 → le fonti durevoli finanziano l'attivo fisso
+
+CE RICLASSIFICATO A VALORE AGGIUNTO:
+  Valore produzione
+  - Costi materie e servizi
+  = Valore aggiunto
+  - Personale
+  = EBITDA
+  - Ammortamenti
+  = EBIT
+  ± Gestione finanziaria
+  - Imposte
+  = UTILE NETTO
+
+
+═══════════════════════════════════════════════════════════════════════
+12. ANALISI PER INDICI
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  16 indici di bilancio divisi in 4 categorie, con benchmark
+  di riferimento e spiegazione delle formule.
+
+GRAFICO RADAR: profilo aziendale sintetico (5 indicatori).
+
+SOLIDITÀ (struttura finanziaria):
+  • Autonomia finanziaria = PN / Attivo × 100     (benchmark > 33%)
+  • Leverage = Attivo / PN                          (benchmark < 3x)
+  • Copertura immobilizzazioni = Fonti durevoli     (benchmark > 100%)
+                                / Immobilizzazioni
+
+LIQUIDITÀ (capacità di pagamento a breve):
+  • Current Ratio = Att.corrente / Pass.correnti    (benchmark > 1.5x)
+  • Quick Ratio = (Att.corr.-Rimanenze) / Pass.corr (benchmark > 1.0x)
+  • Cash Ratio = Liquidità / Pass.correnti          (benchmark > 0.2x)
+
+REDDITIVITÀ (rendimento del capitale):
+  • ROE = Utile netto / PN × 100                   (benchmark > 8%)
+  • ROI = EBIT / Totale attivo × 100               (benchmark > 5%)
+  • ROS = EBIT / Ricavi × 100                      (benchmark > 5%)
+  • ROA = Utile netto / Totale attivo × 100        (benchmark > 3%)
+
+EFFICIENZA (velocità dei cicli):
+  • Rotazione magazzino = Acquisti / Rimanenze      (benchmark > 4x)
+  • DSO = (Crediti / Ricavi) × 365                  (benchmark < 60 gg)
+  • DPO = (Debiti forn. / Acquisti) × 365           (benchmark 60-90 gg)
+  • Ciclo monetario = DSO + gg magazzino - DPO      (benchmark < 60 gg)
+
+In basso: approfondimento su scomposizione ROE (DuPont) e leva
+finanziaria.
+
+
+═══════════════════════════════════════════════════════════════════════
+13. ANALISI GESTIONALE
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  Analisi costi-volumi-profitti con break-even point.
+
+PARAMETRO MODIFICABILE:
+  Slider "Incidenza Costi Fissi" (20% - 90%)
+  Permette di simulare diverse strutture di costo.
+
+INDICATORI:
+  • Break-Even Point = Costi Fissi / MdC%
+    (fatturato minimo per non avere perdite)
+  • Margine di Contribuzione = Ricavi - Costi Variabili
+  • Margine di Sicurezza = (Ricavi - BEP) / Ricavi × 100
+    (quanto posso perdere in fatturato senza andare in perdita)
+
+GRAFICI:
+  • Grafico BEP: area ricavi vs area costi totali, con linea
+    verticale al punto di pareggio
+  • Torta costi: ripartizione costi fissi vs variabili
+  • Dettaglio costi per natura: materie, servizi, personale, ecc.
+
+
+═══════════════════════════════════════════════════════════════════════
+14. BUDGET E CONTROLLO
+═══════════════════════════════════════════════════════════════════════
+
+COSA MOSTRA:
+  Budget mensile di ricavi e costi con andamento cumulato.
+
+FUNZIONALITÀ:
+  • Inserimento voci budget per mese (ricavi, costi, ecc.)
+  • KPI: totale ricavi, totale costi, margine annuo
+  • Grafico barre: ricavi vs costi mensili affiancati
+  • Grafico linee: andamento cumulato (ricavi, costi, margine)
+  • Tabella dettaglio con totali per mese
+
+DATI DEMO: 12 mesi di budget ricavi + 12 mesi budget costi per il 2025.
+
+
+═══════════════════════════════════════════════════════════════════════
+15. GENERAZIONE PDF BILANCIO
+═══════════════════════════════════════════════════════════════════════
+
+COSA FA:
+  Genera un documento PDF fac-simile del bilancio ufficiale,
+  con layout professionale stile bilancio depositato alla CCIAA.
+
+COME USARLO:
+  1. Vai su "Genera Bilancio PDF"
+  2. Inserisci la ragione sociale
+  3. Seleziona l'esercizio
+  4. Verifica l'anteprima (mostra i totali di ogni sezione)
+  5. Clicca "Genera e Scarica PDF Bilancio"
+  6. Il PDF viene scaricato automaticamente
+
+CONTENUTO DEL PDF (4+ pagine):
+  Pagina 1: Stato Patrimoniale Attivo + Passivo
+  Pagina 2: Conto Economico + Margini intermedi
+  Pagina 3: Rendiconto Finanziario + Prospetto Riclassificato
+  Pagina 4: Indici di Bilancio + Scritture di Assestamento
+
+NOTA: Il documento è un FAC-SIMILE a scopo didattico.
+Non ha validità legale.
+
+
+═══════════════════════════════════════════════════════════════════════
+16. SELETTORE ESERCIZIO
+═══════════════════════════════════════════════════════════════════════
+
+In alto a destra di ogni pagina c'è il selettore "Esercizio".
+Cambiando anno, tutti i dati si aggiornano automaticamente.
+
+In modalità demo, i dati sono disponibili solo per il 2025.
+Selezionando altri anni, i valori saranno tutti a zero.
+
+Con Supabase configurato, puoi gestire più esercizi contemporaneamente.
+
+
+═══════════════════════════════════════════════════════════════════════
+17. SUGGERIMENTI DIDATTICI
+═══════════════════════════════════════════════════════════════════════
+
+PERCORSO DI STUDIO CONSIGLIATO:
+
+  1. Piano dei Conti → studia la struttura OIC e le voci
+  2. Prima Nota → registra operazioni e comprendi la partita doppia
+  3. Scritture di Assestamento → capire ratei, risconti, ammortamenti
+  4. Stato Patrimoniale → vedere l'effetto delle operazioni sul SP
+  5. Conto Economico → capire la formazione del reddito
+  6. Rendiconto Finanziario → distinguere reddito da liquidità
+  7. Riclassificazione → leggere il bilancio in ottica finanziaria
+  8. Indici → valutare la salute dell'azienda
+  9. Analisi Gestionale → simulare scenari costi/ricavi
+  10. PDF → produrre il documento finale
+
+ESERCIZI PROPOSTI:
+  • Registra un intero ciclo acquisti-produzione-vendita
+  • Confronta EBITDA e cash flow operativo: perché differiscono?
+  • Modifica lo slider costi fissi e osserva come cambia il BEP
+  • Prova a far quadrare un bilancio con utile negativo
+  • Analizza come un aumento di debito cambia il leverage e il ROE
+
+
+══════════════════════════════════════════════════════════════════════
+Fine guida utente
+══════════════════════════════════════════════════════════════════════

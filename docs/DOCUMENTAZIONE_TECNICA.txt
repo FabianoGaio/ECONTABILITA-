@@ -1,0 +1,413 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║         eCONTABILITÀ — DOCUMENTAZIONE TECNICA DEL PROGETTO         ║
+║         Struttura schematica e architettura del codice              ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Autore:     Progetto didattico universitario
+Versione:   1.0.0
+Data:       Febbraio 2026
+Stack:      Next.js 14 · React 18 · Supabase · Tailwind CSS · Recharts
+
+
+═══════════════════════════════════════════════════════════════════════
+1. ARCHITETTURA GENERALE
+═══════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────┐
+│                      BROWSER                            │
+│  React Components (App Router) + Recharts + jsPDF       │
+├─────────────────────────────────────────────────────────┤
+│                  Next.js API Routes                     │
+│  /api/conti · /api/operazioni · /api/scritture          │
+│  /api/bilancio · /api/budget                            │
+├─────────────────────────────────────────────────────────┤
+│              MOTORE DI CALCOLO (calcoli.ts)             │
+│  Saldi · SP · CE · Rendiconto · Riclassificazione       │
+│  Indici · Analisi gestionale                            │
+├─────────────────────────────────────────────────────────┤
+│          DATI: Supabase PostgreSQL / Demo Mode          │
+│  piano_conti · operazioni · scritture_assestamento      │
+│  bilanci · budget · profili                             │
+└─────────────────────────────────────────────────────────┘
+
+Pattern architetturale: Client → API Route → Calcoli → Database/Demo
+Rendering: Client-side (CSR) con 'use client' per interattività
+
+
+═══════════════════════════════════════════════════════════════════════
+2. ALBERO DEI FILE (39 file sorgente)
+═══════════════════════════════════════════════════════════════════════
+
+econtabilita/
+│
+├── package.json                    Dipendenze e script npm
+├── tsconfig.json                   Configurazione TypeScript
+├── tailwind.config.ts              Configurazione Tailwind + colori custom
+├── postcss.config.js               PostCSS per Tailwind
+├── next.config.js                  Configurazione Next.js
+├── .env.local                      Variabili ambiente (Supabase URL + Key)
+├── .eslintrc.json                  Regole ESLint
+│
+├── supabase/
+│   └── schema.sql                  Schema DB + seed data (piano conti + operazioni esempio)
+│
+├── docs/
+│   ├── DOCUMENTAZIONE_TECNICA.txt  ← QUESTO FILE
+│   └── GUIDA_UTENTE.txt            Guida all'uso della piattaforma
+│
+└── src/
+    ├── types/
+    │   └── index.ts                ★ TIPI TYPESCRIPT (tutte le interfacce)
+    │
+    ├── lib/
+    │   ├── supabase.ts             Client Supabase
+    │   ├── utils.ts                Utility (formatCurrency, formatDate, cn)
+    │   ├── calcoli.ts              ★ MOTORE DI CALCOLO CONTABILE
+    │   ├── pdf-bilancio.ts         ★ GENERATORE PDF BILANCIO UFFICIALE
+    │   ├── hooks.ts                React hooks (useFetch, useConti, useBilancio...)
+    │   └── demo-data.ts            Dati dimostrativi in-memory
+    │
+    ├── components/
+    │   ├── layout/
+    │   │   └── Sidebar.tsx         Barra laterale navigazione
+    │   └── ui/
+    │       ├── EsercizioSelector.tsx  Selettore anno esercizio
+    │       ├── KPICard.tsx            Card indicatore KPI
+    │       └── LoadingSpinner.tsx     Spinner caricamento
+    │
+    └── app/
+        ├── globals.css             Stili globali + classi componenti Tailwind
+        ├── layout.tsx              Layout radice (sidebar + main)
+        ├── page.tsx                ★ DASHBOARD DIREZIONALE (home)
+        │
+        ├── api/
+        │   ├── conti/route.ts      GET/POST piano dei conti
+        │   ├── operazioni/route.ts GET/POST/DELETE prima nota
+        │   ├── scritture/route.ts  GET/POST/DELETE scritture assestamento
+        │   ├── bilancio/route.ts   GET calcolo completo bilancio
+        │   └── budget/route.ts     GET/POST budget
+        │
+        ├── piano-conti/
+        │   └── page.tsx            Gestione piano dei conti OIC
+        │
+        ├── prima-nota/
+        │   └── page.tsx            Registrazione partita doppia
+        │
+        ├── scritture-assestamento/
+        │   └── page.tsx            Ammortamenti, ratei, risconti, accantonamenti
+        │
+        ├── bilancio/
+        │   ├── stato-patrimoniale/page.tsx   SP art. 2424 c.c.
+        │   ├── conto-economico/page.tsx      CE art. 2425 c.c.
+        │   ├── rendiconto-finanziario/page.tsx  CF metodo indiretto OIC 10
+        │   └── pdf/page.tsx                  Generazione PDF fac-simile
+        │
+        └── analisi/
+            ├── riclassificazione/page.tsx    Impieghi/fonti + CE a valore aggiunto
+            ├── indici/page.tsx               Solidità, liquidità, redditività, efficienza
+            ├── gestionale/page.tsx           Break-even, MdC, costi fissi/variabili
+            └── budget/page.tsx               Budget mensile e scostamenti
+
+
+═══════════════════════════════════════════════════════════════════════
+3. SCHEMA DATABASE (6 tabelle)
+═══════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────┐
+│ piano_conti                                             │
+├─────────────────────────────────────────────────────────┤
+│ id               UUID (PK)                              │
+│ codice           VARCHAR(20) UNIQUE   es. "1.2.01"      │
+│ nome             VARCHAR(200)         es. "Terreni"      │
+│ categoria        ENUM: attivo|passivo|patrimonio_netto   │
+│                        |ricavi|costi                     │
+│ sottocategoria   VARCHAR(100)         es. "crediti"      │
+│ sezione_bilancio ENUM: SP_attivo|SP_passivo              │
+│                        |CE_ricavi|CE_costi               │
+│ voce_ufficiale_oic VARCHAR(200)       riferimento OIC    │
+│ created_at       TIMESTAMPTZ                             │
+└─────────────────────────────────────────────────────────┘
+                          │
+                          │ FK conto_id
+                          ▼
+┌─────────────────────────────────────────────────────────┐
+│ operazioni (Prima Nota)                                 │
+├─────────────────────────────────────────────────────────┤
+│ id               UUID (PK)                              │
+│ data             DATE                                   │
+│ conto_id         UUID → piano_conti.id                  │
+│ descrizione      TEXT                                   │
+│ importo          NUMERIC(15,2)                          │
+│ dare_avere       ENUM: dare|avere                       │
+│ esercizio        INTEGER                                │
+│ created_at       TIMESTAMPTZ                             │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ scritture_assestamento                                  │
+├─────────────────────────────────────────────────────────┤
+│ id               UUID (PK)                              │
+│ data             DATE                                   │
+│ tipo             ENUM: ammortamento|rateo_attivo         │
+│                        |rateo_passivo|risconto_attivo    │
+│                        |risconto_passivo|accantonamento  │
+│ conto_dare       UUID → piano_conti.id                  │
+│ conto_avere      UUID → piano_conti.id                  │
+│ importo          NUMERIC(15,2)                          │
+│ descrizione      TEXT                                   │
+│ esercizio        INTEGER                                │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ bilanci (snapshot)        │ budget                      │
+├───────────────────────────┼─────────────────────────────┤
+│ id         UUID (PK)      │ id         UUID (PK)        │
+│ esercizio  INTEGER UNIQUE │ esercizio  INTEGER          │
+│ totale_attivo  NUMERIC    │ mese       INTEGER (1-12)   │
+│ totale_passivo NUMERIC    │ voce       VARCHAR(200)     │
+│ patrimonio_netto NUMERIC  │ importo    NUMERIC(15,2)    │
+│ utile      NUMERIC        │                             │
+│ cash_flow_operativo NUM   │ UNIQUE(esercizio,mese,voce) │
+└───────────────────────────┴─────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ profili (estende Supabase Auth)                         │
+├─────────────────────────────────────────────────────────┤
+│ id    UUID (PK) → auth.users.id                         │
+│ nome  VARCHAR(100)                                      │
+│ ruolo ENUM: admin|contabile|manager                     │
+└─────────────────────────────────────────────────────────┘
+
+RLS: Row Level Security abilitata su tutte le tabelle.
+Policy: accesso completo per utenti autenticati (ambiente didattico).
+
+
+═══════════════════════════════════════════════════════════════════════
+4. MOTORE DI CALCOLO (src/lib/calcoli.ts)
+═══════════════════════════════════════════════════════════════════════
+
+Flusso di calcolo dell'API /api/bilancio:
+
+  piano_conti + operazioni + scritture_assestamento
+                    │
+                    ▼
+         calcolaSaldi(conti, op, scritture)
+         → SaldoConto[] (dare, avere, saldo per ogni conto)
+                    │
+          ┌────────┼────────┐
+          ▼        ▼        ▼
+  calcolaSP()  calcolaCE()  calcolaRF()
+  StatoPatr.   ContoEcon.   RendicontoFin.
+          │        │
+          ▼        ▼
+  calcolaRiclassificazione(sp)
+  → Riclassificazione
+          │        │
+          ▼        ▼
+  calcolaIndici(sp, ce, ricl)
+  → IndiciAnalisi
+               │
+               ▼
+  calcolaAnalisiGestionale(ce)
+  → AnalisiGestionale
+
+FUNZIONI PRINCIPALI:
+
+  calcolaSaldi()
+  ├── Itera operazioni: accumula dare/avere per conto_id
+  ├── Itera scritture: aggiunge dare/avere ai conti corrispondenti
+  └── Calcola saldo: attivo/costi = dare-avere, passivo/ricavi = avere-dare
+
+  calcolaStatoPatrimoniale()
+  ├── Raggruppa saldi per sottocategoria
+  ├── Calcola totali: immobilizzazioni, circolante, debiti, PN
+  ├── Utile esercizio = calcolaCE().utile_netto
+  └── Verifica quadratura: totale_attivo == totale_passivo
+
+  calcolaContoEconomico()
+  ├── Somma saldi per sottocategoria (ricavi e costi)
+  ├── Valore produzione = ricavi + variaz. rimanenze + altri ricavi
+  ├── EBITDA = valore_prod - costi (esclusi ammortamenti)
+  ├── EBIT = EBITDA - ammortamenti
+  └── Utile netto = EBIT - oneri_fin + proventi_fin - imposte
+
+  calcolaRendicontoFinanziario() [metodo indiretto]
+  ├── CF operativo = utile + ammortamenti ± variazioni CCN
+  ├── CF investimenti = -investimenti in immobilizzazioni
+  └── CF finanziamenti = Δ debiti finanziari + Δ patrimonio
+
+  calcolaRiclassificazione()
+  ├── Impieghi: attivo fisso + circolante lordo + liquidità
+  ├── Fonti: PN + passività consolidate + passività correnti
+  ├── CCN = circolante + liquidità - passività correnti
+  └── Margine struttura = (PN + pass.consol.) - attivo fisso
+
+  calcolaIndici()
+  ├── Solidità: autonomia finanziaria, leverage, copertura immob.
+  ├── Liquidità: current ratio, quick ratio, cash ratio
+  ├── Redditività: ROE, ROI, ROS, ROA
+  └── Efficienza: rotazione magazzino, DSO, DPO, ciclo monetario
+
+  calcolaAnalisiGestionale()
+  ├── Separazione costi fissi/variabili (parametro %)
+  ├── Margine di contribuzione = ricavi - costi variabili
+  ├── Break-even point = costi fissi / MdC%
+  └── Margine di sicurezza = (ricavi - BEP) / ricavi
+
+
+═══════════════════════════════════════════════════════════════════════
+5. API ROUTES (5 endpoint)
+═══════════════════════════════════════════════════════════════════════
+
+Tutte le API rilevano automaticamente la modalità demo
+(isDemoMode() controlla se NEXT_PUBLIC_SUPABASE_URL è placeholder).
+
+  GET  /api/conti                          → PianoConto[]
+  POST /api/conti           {body}         → PianoConto
+
+  GET  /api/operazioni      ?esercizio=    → Operazione[] (con join conto)
+  POST /api/operazioni      [{righe}]      → Operazione[] (verifica quadratura)
+  DEL  /api/operazioni      ?id=           → {success}
+
+  GET  /api/scritture       ?esercizio=    → ScritturaAssest.[] (con join conti)
+  POST /api/scritture       {body}         → ScritturaAssestamento
+  DEL  /api/scritture       ?id=           → {success}
+
+  GET  /api/bilancio        ?esercizio=    → {sp, ce, rf, ricl, indici, gestionale}
+  (endpoint principale: esegue tutti i calcoli e restituisce il bilancio completo)
+
+  GET  /api/budget          ?esercizio=    → Budget[]
+  POST /api/budget          {body}         → Budget (upsert)
+
+
+═══════════════════════════════════════════════════════════════════════
+6. COMPONENTI REACT (13 pagine + 4 componenti UI)
+═══════════════════════════════════════════════════════════════════════
+
+LAYOUT:
+  layout.tsx        → Shell: Sidebar + contenuto principale
+  Sidebar.tsx       → Navigazione laterale collassabile, 5 sezioni
+
+PAGINE:
+  page.tsx (/)                  Dashboard: 6 KPI + 5 grafici + riepilogo SP/CE
+  piano-conti/page.tsx          Tabella filtrabile + form inserimento conto
+  prima-nota/page.tsx           Form partita doppia N righe + quadratura live
+  scritture-assestamento/       Form guidato per tipo + riepilogo per tipo
+  bilancio/stato-patrimoniale/  SP civilistico attivo/passivo affiancati
+  bilancio/conto-economico/     CE civilistico + grafico margini
+  bilancio/rendiconto-fin./     CF metodo indiretto + grafico flussi
+  analisi/riclassificazione/    Impieghi/fonti + pie chart + CE a valore aggiunto
+  analisi/indici/               Radar + card per categoria + benchmark
+  analisi/gestionale/           BEP chart + slider costi fissi + pie costi
+  analisi/budget/               Budget mensile + cumulato + tabella dettaglio
+  bilancio/pdf/                 Anteprima + generazione PDF scaricabile
+
+COMPONENTI UI:
+  EsercizioSelector    Select anno esercizio (dropdown)
+  KPICard              Card metrica con trend e formattazione
+  LoadingSpinner       Indicatore caricamento animato
+
+HOOKS (src/lib/hooks.ts):
+  useFetch<T>(url)     Hook generico GET con loading/error/refetch
+  useConti()           → PianoConto[]
+  useOperazioni(anno)  → Operazione[]
+  useScritture(anno)   → ScritturaAssestamento[]
+  useBilancio(anno)    → {sp, ce, rf, ricl, indici, gestionale, ...}
+  useBudget(anno)      → Budget[]
+  useEsercizio()       → {esercizio, setEsercizio}
+
+
+═══════════════════════════════════════════════════════════════════════
+7. GENERAZIONE PDF (src/lib/pdf-bilancio.ts)
+═══════════════════════════════════════════════════════════════════════
+
+Librerie: jsPDF + jspdf-autotable
+Output: PDF A4 portrait, multi-pagina
+
+Struttura documento generato:
+  Pag. 1  │ Copertina + SP Attivo + SP Passivo
+  Pag. 2  │ Conto Economico + Margini intermedi
+  Pag. 3  │ Rendiconto Finanziario + Prospetto Riclassificato
+  Pag. 4  │ Indici di Bilancio + Scritture di Assestamento
+
+Layout: stile bilancio depositato CCIAA
+  - Header blu con ragione sociale e esercizio
+  - Tabelle con grid/stripe
+  - Subtotali evidenziati
+  - Footer su ogni pagina con numero pagina
+  - Nota "FAC-SIMILE a scopo didattico"
+
+
+═══════════════════════════════════════════════════════════════════════
+8. DIPENDENZE PRINCIPALI
+═══════════════════════════════════════════════════════════════════════
+
+  next@14.2.x           Framework React full-stack
+  react@18.3.x          Libreria UI
+  @supabase/supabase-js Client database PostgreSQL
+  tailwindcss@3.4.x     CSS utility-first
+  recharts@2.12.x       Grafici (Bar, Pie, Line, Area, Radar)
+  jspdf@2.5.x           Generazione PDF lato client
+  jspdf-autotable@3.8.x Tabelle automatiche in PDF
+  date-fns@3.6.x        Manipolazione date
+  clsx + tailwind-merge  Utility classi CSS condizionali
+
+
+═══════════════════════════════════════════════════════════════════════
+9. MODALITÀ DEMO vs PRODUZIONE
+═══════════════════════════════════════════════════════════════════════
+
+  DEMO (default):
+  ├── .env.local contiene URL placeholder
+  ├── isDemoMode() → true
+  ├── API servono dati da demo-data.ts (in-memory)
+  ├── Inserimento/cancellazione disabilitati
+  └── 60 conti + 26 operazioni + 6 scritture + 24 budget precaricati
+
+  PRODUZIONE (con Supabase):
+  ├── .env.local con URL e KEY reali
+  ├── isDemoMode() → false
+  ├── API comunicano con Supabase PostgreSQL
+  ├── CRUD completo abilitato
+  └── RLS attiva, richiede autenticazione
+
+
+═══════════════════════════════════════════════════════════════════════
+10. PIANO DEI CONTI OIC (60 voci)
+═══════════════════════════════════════════════════════════════════════
+
+  Codice    Categoria              Sottocategorie
+  ────────  ─────────────────────  ─────────────────────────────
+  1.1.xx    Attivo                 immobilizzazioni_immateriali (4)
+  1.2.xx    Attivo                 immobilizzazioni_materiali (5)
+  1.3.xx    Attivo                 immobilizzazioni_finanziarie (2)
+  2.1.xx    Attivo                 rimanenze (3)
+  2.2.xx    Attivo                 crediti (4)
+  2.3.xx    Attivo                 disponibilita_liquide (2)
+  2.4.xx    Attivo                 ratei_risconti_attivi (2)
+  3.1.xx    Patrimonio Netto       patrimonio_netto (4)
+  3.2.xx    Passivo                fondi_rischi (3)
+  3.3.xx    Passivo                tfr (1)
+  3.4.xx    Passivo                debiti_finanziari (2)
+  3.5.xx    Passivo                debiti_commerciali (4)
+  3.6.xx    Passivo                ratei_risconti_passivi (2)
+  4.1.xx    Ricavi                 ricavi_vendite (2)
+  4.2.xx    Ricavi                 variazione_rimanenze (1)
+  4.3.xx    Ricavi                 altri_ricavi (2)
+  4.4.xx    Ricavi                 proventi_finanziari (1)
+  5.1.xx    Costi                  costi_acquisti (2)
+  5.2.xx    Costi                  costi_servizi (3)
+  5.3.xx    Costi                  godimento_beni_terzi (2)
+  5.4.xx    Costi                  personale (3)
+  5.5.xx    Costi                  ammortamenti (3)
+  5.6.xx    Costi                  oneri_finanziari (2)
+  5.7.xx    Costi                  imposte (2)
+  5.8.xx    Costi                  altri_costi (2)
+
+  Totale: 60 conti
+  Mapping: ogni conto → voce_ufficiale_oic (art. 2424/2425 c.c.)
+
+
+══════════════════════════════════════════════════════════════════════
+Fine documentazione tecnica
+══════════════════════════════════════════════════════════════════════
