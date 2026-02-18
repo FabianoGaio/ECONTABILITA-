@@ -71,9 +71,9 @@ export default function GestionalePage() {
 
       {/* Parametro costi fissi */}
       <div className="card">
-        <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700">
-            Incidenza Costi Fissi su totale costi: <strong>{percCF}%</strong>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <label className="text-sm font-medium text-gray-700 flex-shrink-0">
+            Incidenza Costi Fissi: <strong>{percCF}%</strong>
           </label>
           <input
             type="range"
@@ -83,7 +83,7 @@ export default function GestionalePage() {
             onChange={(e) => setPercCF(parseInt(e.target.value))}
             className="flex-1 accent-blue-600"
           />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 flex-shrink-0">
             CF: {formatCurrency(costiFissi)} | CV: {formatCurrency(costiVariabili)}
           </span>
         </div>

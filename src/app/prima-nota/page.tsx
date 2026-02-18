@@ -136,9 +136,9 @@ export default function PrimaNotaPage() {
               <button type="button" onClick={addRiga} className="btn-secondary text-xs">+ Aggiungi riga</button>
             </div>
             {righe.map((riga, i) => (
-              <div key={i} className="flex gap-3 items-center">
+              <div key={i} className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 items-center bg-gray-50 sm:bg-transparent rounded-lg p-2 sm:p-0">
                 <select
-                  className="select-field flex-1"
+                  className="select-field flex-1 min-w-0"
                   value={riga.conto_id}
                   onChange={(e) => updateRiga(i, 'conto_id', e.target.value)}
                   required
@@ -149,7 +149,7 @@ export default function PrimaNotaPage() {
                   ))}
                 </select>
                 <select
-                  className="select-field w-24"
+                  className="select-field w-24 flex-shrink-0"
                   value={riga.dare_avere}
                   onChange={(e) => updateRiga(i, 'dare_avere', e.target.value)}
                 >
@@ -160,13 +160,13 @@ export default function PrimaNotaPage() {
                   type="number"
                   step="0.01"
                   min="0"
-                  className="input-field w-36"
+                  className="input-field w-28 sm:w-36 flex-shrink-0"
                   value={riga.importo || ''}
                   onChange={(e) => updateRiga(i, 'importo', parseFloat(e.target.value) || 0)}
                   placeholder="Importo"
                   required
                 />
-                <button type="button" onClick={() => removeRiga(i)} className="text-red-400 hover:text-red-600 text-lg px-2" title="Rimuovi">
+                <button type="button" onClick={() => removeRiga(i)} className="text-red-400 hover:text-red-600 text-lg px-2 flex-shrink-0" title="Rimuovi">
                   ×
                 </button>
               </div>
@@ -195,14 +195,14 @@ export default function PrimaNotaPage() {
 
       {/* Filtro */}
       <input
-        className="input-field w-64"
+        className="input-field w-full sm:w-64"
         placeholder="Filtra per descrizione o conto..."
         value={filtro}
         onChange={(e) => setFiltro(e.target.value)}
       />
 
       {/* Totali generali */}
-      <div className="flex gap-6 text-sm">
+      <div className="flex flex-wrap gap-3 sm:gap-6 text-sm">
         <span>Totale Dare: <strong className="text-blue-700">{formatCurrency(totGeneraleDare)}</strong></span>
         <span>Totale Avere: <strong className="text-green-700">{formatCurrency(totGeneraleAvere)}</strong></span>
         <span className={Math.abs(totGeneraleDare - totGeneraleAvere) < 0.01 ? 'text-green-600' : 'text-red-600'}>

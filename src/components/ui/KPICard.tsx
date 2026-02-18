@@ -33,7 +33,7 @@ export default function KPICard({ kpi }: { kpi: KPI }) {
         {trendIcon()}
       </div>
       <p
-        className="text-2xl font-bold"
+        className="text-xl sm:text-2xl font-bold truncate"
         style={{ color: kpi.color || '#1e40af' }}
       >
         {formatValue()}

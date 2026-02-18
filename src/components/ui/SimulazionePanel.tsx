@@ -130,10 +130,10 @@ export default function SimulazionePanel() {
       <div className="fixed inset-0 bg-black/30" />
       <div className="relative ml-auto w-full max-w-2xl bg-white shadow-2xl flex flex-col h-full" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white px-6 py-4 flex-shrink-0">
+        <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white px-5 sm:px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold">Simulazione What-If</h2>
+              <h2 className="text-base sm:text-lg font-bold">Simulazione What-If</h2>
               <p className="text-purple-200 text-xs">Modifica i valori e osserva l&apos;impatto su tutti gli indicatori</p>
             </div>
             <div className="flex gap-2">
@@ -144,7 +144,7 @@ export default function SimulazionePanel() {
                 Reset
               </button>
               <button onClick={closeSimulation} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 text-lg">
-                x
+                ✕
               </button>
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function SimulazionePanel() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-2 divide-x divide-gray-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 sm:divide-x divide-gray-100">
             {/* Left: Sliders */}
             <div className="p-4 space-y-3">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Parametri</h3>

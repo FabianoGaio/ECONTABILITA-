@@ -122,7 +122,7 @@ export default function PianoContiPage() {
       {/* Filtri */}
       <div className="flex flex-wrap gap-3">
         <input
-          className="input-field w-64"
+          className="input-field w-full sm:w-64"
           placeholder="Cerca per codice, nome o voce OIC..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}

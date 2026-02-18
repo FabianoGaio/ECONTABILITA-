@@ -53,7 +53,11 @@ const navigation = [
   },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export default function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const { user, profilo, isDemo, esercizi, esercizioAttivo, setEsercizioAttivo, signOut } = useAuth();
@@ -62,7 +66,7 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300',
+        'flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300 h-screen',
         collapsed ? 'w-16' : 'w-64'
       )}
     >
@@ -167,6 +171,7 @@ export default function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onNavigate}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all mb-0.5',
                     isActive
