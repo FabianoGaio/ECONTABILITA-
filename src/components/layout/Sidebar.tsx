@@ -191,14 +191,11 @@ function SidebarInner({ collapsed, onClose, closeIcon }: SidebarInnerProps) {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold">
-                  {(profilo?.nome?.[0] || user.email?.[0] || 'U').toUpperCase()}
+                  {(profilo?.nome?.[0] || 'U').toUpperCase()}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-white truncate">
-                    {profilo?.nome || user.email?.split('@')[0]}
-                  </p>
-                  <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
-                </div>
+                <p className="text-xs font-medium text-white truncate flex-1 min-w-0">
+                  {profilo?.nome || 'Utente'}
+                </p>
               </div>
               <button
                 onClick={() => signOut()}
