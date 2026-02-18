@@ -188,7 +188,7 @@ export default function IndiciPage() {
           <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
           Indici di Efficienza
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <IndiceCard
             label="Rotazione Magazzino"
             value={idx.efficienza.rotazione_magazzino}

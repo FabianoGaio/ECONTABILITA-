@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useStudy } from '@/lib/study-context';
 
@@ -53,25 +53,21 @@ const navigation = [
   },
 ];
 
-interface SidebarProps {
-  onNavigate?: () => void;
+interface SidebarInnerProps {
+  collapsed: boolean;
+  onClose: () => void;
+  closeIcon: string;
 }
 
-export default function Sidebar({ onNavigate }: SidebarProps) {
+function SidebarInner({ collapsed, onClose, closeIcon }: SidebarInnerProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const { user, profilo, isDemo, esercizi, esercizioAttivo, setEsercizioAttivo, signOut } = useAuth();
   const { studyMode, toggleStudyMode, openSimulation } = useStudy();
 
   return (
-    <aside
-      className={cn(
-        'flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300 h-screen',
-        collapsed ? 'w-16' : 'w-64'
-      )}
-    >
+    <>
       {/* Header */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700">
+      <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700 flex-shrink-0">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-sm font-bold">
@@ -84,16 +80,16 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           </div>
         )}
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={onClose}
           className="p-1.5 rounded-lg hover:bg-slate-700 transition-colors text-slate-400"
         >
-          {collapsed ? '→' : '←'}
+          {closeIcon}
         </button>
       </div>
 
-      {/* Selettore Esercizio (solo se Supabase attivo e non collapsed) */}
+      {/* Selettore Esercizio */}
       {!isDemo && !collapsed && esercizi.length > 0 && (
-        <div className="px-3 py-3 border-b border-slate-700">
+        <div className="px-3 py-3 border-b border-slate-700 flex-shrink-0">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Esercizio</p>
           <select
             value={esercizioAttivo?.id || ''}
@@ -114,7 +110,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
       {/* Demo Mode Badge */}
       {isDemo && !collapsed && (
-        <div className="px-3 py-2 border-b border-slate-700">
+        <div className="px-3 py-2 border-b border-slate-700 flex-shrink-0">
           <div className="flex items-center gap-2 px-2 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-md">
             <span className="text-amber-400 text-xs">⚡</span>
             <span className="text-amber-300 text-[10px] font-medium">Modalita Demo</span>
@@ -124,7 +120,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
       {/* Study Mode Toggle */}
       {!collapsed && (
-        <div className="px-3 py-3 border-b border-slate-700 space-y-2">
+        <div className="px-3 py-3 border-b border-slate-700 space-y-2 flex-shrink-0">
           <button
             onClick={toggleStudyMode}
             className={cn(
@@ -171,7 +167,6 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={onNavigate}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all mb-0.5',
                     isActive
@@ -191,7 +186,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
 
       {/* Footer - User Info */}
       {!collapsed && (
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-slate-700 flex-shrink-0">
           {!isDemo && user ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -221,6 +216,73 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           )}
         </div>
       )}
-    </aside>
+    </>
+  );
+}
+
+export default function Sidebar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  return (
+    <>
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="lg:hidden fixed top-3 left-3 z-40 w-10 h-10 bg-slate-800 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-slate-700 transition-colors"
+        aria-label="Apri menu"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileOpen(false)} />
+      )}
+
+      {/* Mobile sidebar (drawer) */}
+      <aside
+        className={cn(
+          'lg:hidden fixed top-0 left-0 z-50 h-full w-72 flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-transform duration-300',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <SidebarInner
+          collapsed={false}
+          onClose={() => setMobileOpen(false)}
+          closeIcon="✕"
+        />
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          'hidden lg:flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300 flex-shrink-0',
+          collapsed ? 'w-16' : 'w-64'
+        )}
+      >
+        <SidebarInner
+          collapsed={collapsed}
+          onClose={() => setCollapsed(!collapsed)}
+          closeIcon={collapsed ? '→' : '←'}
+        />
+      </aside>
+    </>
   );
 }

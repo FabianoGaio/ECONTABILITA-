@@ -71,7 +71,7 @@ export default function GestionalePage() {
 
       {/* Parametro costi fissi */}
       <div className="card">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <label className="text-sm font-medium text-gray-700 flex-shrink-0">
             Incidenza Costi Fissi: <strong>{percCF}%</strong>
           </label>

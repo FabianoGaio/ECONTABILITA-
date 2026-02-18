@@ -86,13 +86,13 @@ function ResultRow({ label, baseVal, modVal, format = 'currency' }: { label: str
   const fmtMod = format === 'percentage' ? `${modVal.toFixed(1)}%` : format === 'ratio' ? `${modVal.toFixed(2)}x` : format === 'days' ? `${modVal.toFixed(0)} gg` : formatCurrency(modVal);
 
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-gray-50">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-1.5 border-b border-gray-50 gap-0.5">
       <span className="text-xs text-gray-600">{label}</span>
-      <div className="flex items-center gap-3">
-        <span className="text-xs font-mono text-gray-400 w-20 text-right">{fmtBase}</span>
+      <div className="flex items-center gap-2 sm:gap-3">
+        <span className="text-xs font-mono text-gray-400 w-16 sm:w-20 text-right">{fmtBase}</span>
         <span className="text-xs text-gray-300">→</span>
-        <span className="text-xs font-mono font-medium w-20 text-right">{fmtMod}</span>
-        <div className="w-16 text-right"><Delta base={baseVal} modified={modVal} format={format === 'percentage' ? 'percentage' : 'currency'} /></div>
+        <span className="text-xs font-mono font-medium w-16 sm:w-20 text-right">{fmtMod}</span>
+        <div className="w-14 sm:w-16 text-right"><Delta base={baseVal} modified={modVal} format={format === 'percentage' ? 'percentage' : 'currency'} /></div>
       </div>
     </div>
   );
@@ -130,9 +130,9 @@ export default function SimulazionePanel() {
       <div className="fixed inset-0 bg-black/30" />
       <div className="relative ml-auto w-full max-w-2xl bg-white shadow-2xl flex flex-col h-full" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white px-5 sm:px-6 py-4 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div>
+        <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white px-4 sm:px-6 py-4 flex-shrink-0">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <h2 className="text-base sm:text-lg font-bold">Simulazione What-If</h2>
               <p className="text-purple-200 text-xs">Modifica i valori e osserva l&apos;impatto su tutti gli indicatori</p>
             </div>
@@ -144,7 +144,7 @@ export default function SimulazionePanel() {
                 Reset
               </button>
               <button onClick={closeSimulation} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 text-lg">
-                ✕
+                x
               </button>
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function SimulazionePanel() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 sm:divide-x divide-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-gray-100">
             {/* Left: Sliders */}
             <div className="p-4 space-y-3">
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Parametri</h3>

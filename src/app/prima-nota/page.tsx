@@ -136,9 +136,9 @@ export default function PrimaNotaPage() {
               <button type="button" onClick={addRiga} className="btn-secondary text-xs">+ Aggiungi riga</button>
             </div>
             {righe.map((riga, i) => (
-              <div key={i} className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 items-center bg-gray-50 sm:bg-transparent rounded-lg p-2 sm:p-0">
+              <div key={i} className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:items-center p-2 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
                 <select
-                  className="select-field flex-1 min-w-0"
+                  className="select-field flex-1"
                   value={riga.conto_id}
                   onChange={(e) => updateRiga(i, 'conto_id', e.target.value)}
                   required
@@ -148,36 +148,38 @@ export default function PrimaNotaPage() {
                     <option key={c.id} value={c.id}>{c.codice} - {c.nome}</option>
                   ))}
                 </select>
-                <select
-                  className="select-field w-24 flex-shrink-0"
-                  value={riga.dare_avere}
-                  onChange={(e) => updateRiga(i, 'dare_avere', e.target.value)}
-                >
-                  <option value="dare">Dare</option>
-                  <option value="avere">Avere</option>
-                </select>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  className="input-field w-28 sm:w-36 flex-shrink-0"
-                  value={riga.importo || ''}
-                  onChange={(e) => updateRiga(i, 'importo', parseFloat(e.target.value) || 0)}
-                  placeholder="Importo"
-                  required
-                />
-                <button type="button" onClick={() => removeRiga(i)} className="text-red-400 hover:text-red-600 text-lg px-2 flex-shrink-0" title="Rimuovi">
-                  ×
-                </button>
+                <div className="flex gap-2 sm:gap-3 items-center">
+                  <select
+                    className="select-field w-24"
+                    value={riga.dare_avere}
+                    onChange={(e) => updateRiga(i, 'dare_avere', e.target.value)}
+                  >
+                    <option value="dare">Dare</option>
+                    <option value="avere">Avere</option>
+                  </select>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className="input-field flex-1 sm:w-36 sm:flex-none"
+                    value={riga.importo || ''}
+                    onChange={(e) => updateRiga(i, 'importo', parseFloat(e.target.value) || 0)}
+                    placeholder="Importo"
+                    required
+                  />
+                  <button type="button" onClick={() => removeRiga(i)} className="text-red-400 hover:text-red-600 text-lg px-2 flex-shrink-0" title="Rimuovi">
+                    ×
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
           {/* Quadratura */}
-          <div className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm ${
+          <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3 rounded-lg text-sm ${
             quadra ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200'
           }`}>
-            <div className="flex gap-6">
+            <div className="flex gap-4 sm:gap-6 flex-wrap">
               <span>Dare: <strong className="text-blue-700">{formatCurrency(totaleDare)}</strong></span>
               <span>Avere: <strong className="text-green-700">{formatCurrency(totaleAvere)}</strong></span>
             </div>

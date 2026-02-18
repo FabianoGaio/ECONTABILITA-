@@ -113,14 +113,14 @@ export default function RiclassificazionePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-1"><p className="text-xs font-medium text-gray-500 uppercase">CCN</p><InfoButton chiave="capitale_circolante_netto" infoId="ccn_voce" /></div>
-          <p className={`text-3xl font-bold ${ricl.capitale_circolante_netto >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+          <p className={`text-xl sm:text-3xl font-bold ${ricl.capitale_circolante_netto >= 0 ? 'text-green-700' : 'text-red-700'}`}>
             {formatCurrency(ricl.capitale_circolante_netto)}
           </p>
           <p className="text-xs text-gray-500 mt-1">Attivo corrente - Passivita correnti</p>
         </div>
         <div className="kpi-card">
           <div className="flex items-center justify-between mb-1"><p className="text-xs font-medium text-gray-500 uppercase">Margine di Struttura</p><InfoButton chiave="margine_struttura" /></div>
-          <p className={`text-3xl font-bold ${ricl.margine_struttura >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+          <p className={`text-xl sm:text-3xl font-bold ${ricl.margine_struttura >= 0 ? 'text-green-700' : 'text-red-700'}`}>
             {formatCurrency(ricl.margine_struttura)}
           </p>
           <p className="text-xs text-gray-500 mt-1">(PN + Pass. consolidate) - Attivo fisso</p>

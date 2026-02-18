@@ -48,129 +48,121 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={() => setOpen(false)}>
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4" onClick={() => setOpen(false)}>
+          <div className="fixed inset-0 bg-black/40" />
           <div
-            className="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-xl max-h-[92vh] sm:max-h-[85vh] overflow-hidden flex flex-col sm:m-4"
+            className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overflow-x-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-blue-700 to-blue-600 text-white px-5 sm:px-6 py-4 rounded-t-2xl flex-shrink-0">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="inline-block px-2 py-0.5 bg-white/20 rounded text-[10px] uppercase tracking-wider font-medium">
-                      {info?.categoria?.replace(/_/g, ' ') || def?.categoria || ''}
-                    </span>
-                    {info?.codice_conto && (
-                      <span className="inline-block px-2 py-0.5 bg-white/10 rounded text-[10px] font-mono">
-                        {info.codice_conto}
-                      </span>
-                    )}
-                  </div>
-                  <h2 className="text-base sm:text-lg font-bold leading-tight">{info?.titolo || def?.titolo}</h2>
+            <div className="sticky top-0 bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 sm:px-6 py-4 rounded-t-2xl z-10">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <span className="inline-block px-2 py-0.5 bg-white/20 rounded text-[10px] uppercase tracking-wider mb-1">
+                    {info?.categoria || def?.categoria || ''}
+                  </span>
+                  <h2 className="text-base sm:text-lg font-bold break-words">{info?.titolo || def?.titolo}</h2>
+                  {info?.codice_conto && (
+                    <span className="text-blue-200 text-xs font-mono">Codice: {info.codice_conto}</span>
+                  )}
                 </div>
                 <button
                   onClick={() => setOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors text-lg flex-shrink-0 mt-0.5"
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors text-xl flex-shrink-0"
                 >
-                  ✕
+                  x
                 </button>
               </div>
             </div>
 
-            {/* Scrollable body */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-5 sm:px-6 py-5 space-y-5 min-w-0">
+            {/* Body */}
+            <div className="px-4 sm:px-6 py-5 space-y-4">
               {/* Definizione */}
-              <div className="min-w-0">
-                <h3 className="info-section-title">Definizione Teorica</h3>
-                <p className="info-text">{info?.definizione || def?.definizione}</p>
+              <div>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Definizione Teorica</h3>
+                <p className="text-sm text-gray-800 leading-relaxed break-words">{info?.definizione || def?.definizione}</p>
               </div>
 
-              {/* Spiegazione */}
+              {/* Spiegazione (solo info) */}
               {info?.spiegazione && (
-                <div className="min-w-0">
-                  <h3 className="info-section-title">Spiegazione Pratica</h3>
-                  <p className="info-text text-gray-600">{info.spiegazione}</p>
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Spiegazione Pratica</h3>
+                  <p className="text-sm text-gray-700 leading-relaxed break-words">{info.spiegazione}</p>
                 </div>
               )}
 
               {/* Formula */}
               {(info?.formula || def?.formula) && (
-                <div className="info-box bg-blue-50 border-blue-200">
-                  <h3 className="info-box-title text-blue-700">Formula</h3>
-                  <p className="text-sm text-blue-900 font-mono whitespace-pre-wrap leading-relaxed break-all">{info?.formula || def?.formula}</p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                  <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">Formula</h3>
+                  <p className="text-sm text-blue-900 font-mono whitespace-pre-wrap break-words">{info?.formula || def?.formula}</p>
                 </div>
               )}
 
               {/* Collocazione bilancio */}
               {info?.collocazione_bilancio && (
-                <div className="info-box bg-indigo-50 border-indigo-200">
-                  <h3 className="info-box-title text-indigo-700">Collocazione nel Bilancio</h3>
-                  <p className="info-text text-indigo-900">{info.collocazione_bilancio}</p>
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                  <h3 className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">Collocazione nel Bilancio</h3>
+                  <p className="text-sm text-indigo-900 break-words">{info.collocazione_bilancio}</p>
                 </div>
               )}
 
               {/* Scrittura tipica */}
               {info?.scrittura_tipica && (
-                <div className="info-box bg-slate-50 border-slate-200">
-                  <h3 className="info-box-title text-slate-700">Scrittura Contabile Tipica</h3>
-                  <div className="overflow-x-auto -mx-4 px-4">
-                    <pre className="text-[12px] sm:text-[13px] text-slate-800 font-mono whitespace-pre-wrap leading-[1.8]">{info.scrittura_tipica}</pre>
-                  </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                  <h3 className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Scrittura Contabile Tipica</h3>
+                  <pre className="text-xs text-slate-800 font-mono whitespace-pre-wrap break-words leading-relaxed">{info.scrittura_tipica}</pre>
                 </div>
               )}
 
               {/* Normativa */}
               {(info?.normativa || def?.normativa) && (
-                <div className="info-box bg-amber-50 border-amber-200">
-                  <h3 className="info-box-title text-amber-700">Riferimento Normativo</h3>
-                  <p className="info-text text-amber-900">{info?.normativa || def?.normativa}</p>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                  <h3 className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-1">Riferimento Normativo</h3>
+                  <p className="text-sm text-amber-900 break-words">{info?.normativa || def?.normativa}</p>
                 </div>
               )}
 
               {/* Esempio */}
               {(info?.esempio_pratico || def?.esempio) && (
-                <div className="info-box bg-green-50 border-green-200">
-                  <h3 className="info-box-title text-green-700">Esempio Reale</h3>
-                  <p className="info-text text-green-900">{info?.esempio_pratico || def?.esempio}</p>
+                <div className="bg-green-50 border border-green-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                  <h3 className="text-xs font-semibold text-green-600 uppercase tracking-wider mb-1">Esempio Reale</h3>
+                  <p className="text-sm text-green-900 break-words">{info?.esempio_pratico || def?.esempio}</p>
                 </div>
               )}
 
-              {/* Effetti */}
+              {/* Effetti (solo info) */}
               {info && (
-                <div className="min-w-0">
-                  <h3 className="info-section-title mb-2.5">Impatto su...</h3>
-                  <div className="space-y-2.5">
-                    <div className="info-box bg-purple-50 border-purple-200">
-                      <h4 className="info-box-title text-purple-700">Utile</h4>
-                      <p className="text-[13px] leading-relaxed text-purple-900">{info.effetto_utile}</p>
-                    </div>
-                    <div className="info-box bg-amber-50 border-amber-200">
-                      <h4 className="info-box-title text-amber-700">Cassa</h4>
-                      <p className="text-[13px] leading-relaxed text-amber-900">{info.effetto_cassa}</p>
-                    </div>
-                    <div className="info-box bg-red-50 border-red-200">
-                      <h4 className="info-box-title text-red-700">Indici</h4>
-                      <p className="text-[13px] leading-relaxed text-red-900">{info.effetto_indici}</p>
-                    </div>
+                <div className="space-y-2">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Impatto su...</h3>
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                    <h4 className="text-[10px] font-semibold text-purple-600 uppercase mb-1">Utile</h4>
+                    <p className="text-sm text-purple-900 break-words">{info.effetto_utile}</p>
+                  </div>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                    <h4 className="text-[10px] font-semibold text-amber-600 uppercase mb-1">Cassa</h4>
+                    <p className="text-sm text-amber-900 break-words">{info.effetto_cassa}</p>
+                  </div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg px-3 sm:px-4 py-3 overflow-hidden">
+                    <h4 className="text-[10px] font-semibold text-red-600 uppercase mb-1">Indici</h4>
+                    <p className="text-sm text-red-900 break-words">{info.effetto_indici}</p>
                   </div>
                 </div>
               )}
 
               {/* Interpretazione (solo def) */}
               {def?.interpretazione && !info && (
-                <div className="min-w-0">
-                  <h3 className="info-section-title">Interpretazione</h3>
-                  <p className="info-text text-gray-600">{def.interpretazione}</p>
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Interpretazione</h3>
+                  <p className="text-sm text-gray-700 leading-relaxed break-words">{def.interpretazione}</p>
                 </div>
               )}
 
               {/* Collegamenti */}
               {collegamenti.length > 0 && (
-                <div className="min-w-0">
-                  <h3 className="info-section-title mb-2">Voci Collegate</h3>
-                  <div className="flex flex-wrap gap-2">
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Voci Collegate</h3>
+                  <div className="flex flex-wrap gap-1.5">
                     {collegamenti.map(col => (
                       <button
                         key={col.id}
@@ -180,9 +172,8 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
                             study.openPanel(col);
                           }
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-[13px] rounded-lg hover:bg-blue-100 border border-blue-200 transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full hover:bg-blue-100 border border-blue-200"
                       >
-                        <span className="text-blue-400">→</span>
                         {col.titolo}
                       </button>
                     ))}
@@ -192,8 +183,8 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
 
               {/* Study mode hint */}
               {info && !study.studyMode && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-center">
-                  <p className="text-[13px] text-gray-500">Attiva la <strong>Modalita Studio</strong> nella sidebar per navigare tra le voci collegate.</p>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 sm:px-4 py-3 text-center">
+                  <p className="text-xs text-gray-500">Attiva la <strong>Modalita Studio</strong> nella sidebar per navigare tra le voci collegate e aprire il pannello laterale.</p>
                 </div>
               )}
             </div>

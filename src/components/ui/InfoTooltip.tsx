@@ -44,8 +44,8 @@ export default function InfoTooltip({ codice, infoId, children, className = '' }
       </span>
 
       {showTooltip && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
-          <div className="bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl max-w-xs whitespace-normal">
+        <div className="hidden sm:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
+          <div className="bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl max-w-xs whitespace-normal break-words">
             <p className="font-semibold text-blue-300 mb-0.5">{info.titolo}</p>
             <p className="text-slate-300 leading-relaxed">{info.tooltip}</p>
             <p className="text-blue-400 text-[10px] mt-1">Clicca per approfondire</p>
