@@ -51,7 +51,7 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4" onClick={() => setOpen(false)}>
           <div className="fixed inset-0 bg-black/40" />
           <div
-            className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overflow-x-hidden"
+            className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overflow-x-hidden whitespace-normal"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
