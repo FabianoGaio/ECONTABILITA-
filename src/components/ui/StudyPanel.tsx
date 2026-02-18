@@ -78,15 +78,15 @@ export default function StudyPanel() {
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-5 py-5 space-y-4 min-w-0">
           {/* Definizione */}
-          <div>
+          <div className="min-w-0">
             <h3 className="info-section-title">Definizione Teorica</h3>
             <p className="info-text">{selectedInfo.definizione}</p>
           </div>
 
           {/* Spiegazione */}
-          <div>
+          <div className="min-w-0">
             <h3 className="info-section-title">Spiegazione Pratica</h3>
             <p className="info-text text-gray-600">{selectedInfo.spiegazione}</p>
           </div>
@@ -95,7 +95,7 @@ export default function StudyPanel() {
           {selectedInfo.formula && (
             <div className="info-box bg-indigo-50 border-indigo-200">
               <h4 className="info-box-title text-indigo-700">Formula</h4>
-              <pre className="text-sm font-mono text-indigo-900 whitespace-pre-wrap leading-relaxed">{selectedInfo.formula}</pre>
+              <p className="text-sm font-mono text-indigo-900 whitespace-pre-wrap leading-relaxed break-all">{selectedInfo.formula}</p>
             </div>
           )}
 
@@ -105,14 +105,16 @@ export default function StudyPanel() {
           {/* Scrittura tipica */}
           <div className="info-box bg-slate-50 border-slate-200">
             <h4 className="info-box-title text-slate-700">Scrittura Contabile Tipica</h4>
-            <pre className="text-[13px] text-slate-800 font-mono whitespace-pre-wrap leading-[1.7] overflow-x-auto">{selectedInfo.scrittura_tipica}</pre>
+            <div className="overflow-x-auto -mx-4 px-4">
+              <pre className="text-[12px] sm:text-[13px] text-slate-800 font-mono whitespace-pre-wrap leading-[1.8]">{selectedInfo.scrittura_tipica}</pre>
+            </div>
           </div>
 
           {/* Esempio pratico */}
           <Section title="Esempio Reale" content={selectedInfo.esempio_pratico} color="green" />
 
           {/* Effetti */}
-          <div>
+          <div className="min-w-0">
             <h3 className="info-section-title mb-2.5">Impatto su...</h3>
             <div className="space-y-2">
               <Section title="Effetto sull'Utile" content={selectedInfo.effetto_utile} color="purple" />
@@ -129,7 +131,7 @@ export default function StudyPanel() {
 
           {/* Collegamenti */}
           {collegamenti.length > 0 && (
-            <div>
+            <div className="min-w-0">
               <h3 className="info-section-title mb-2">Collegamenti Dinamici</h3>
               <div className="flex flex-wrap gap-2">
                 {collegamenti.map(col => (

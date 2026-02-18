@@ -80,16 +80,16 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
             </div>
 
             {/* Scrollable body */}
-            <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-5">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-5 sm:px-6 py-5 space-y-5 min-w-0">
               {/* Definizione */}
-              <div>
+              <div className="min-w-0">
                 <h3 className="info-section-title">Definizione Teorica</h3>
                 <p className="info-text">{info?.definizione || def?.definizione}</p>
               </div>
 
               {/* Spiegazione */}
               {info?.spiegazione && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="info-section-title">Spiegazione Pratica</h3>
                   <p className="info-text text-gray-600">{info.spiegazione}</p>
                 </div>
@@ -99,7 +99,7 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
               {(info?.formula || def?.formula) && (
                 <div className="info-box bg-blue-50 border-blue-200">
                   <h3 className="info-box-title text-blue-700">Formula</h3>
-                  <pre className="text-sm text-blue-900 font-mono whitespace-pre-wrap leading-relaxed">{info?.formula || def?.formula}</pre>
+                  <p className="text-sm text-blue-900 font-mono whitespace-pre-wrap leading-relaxed break-all">{info?.formula || def?.formula}</p>
                 </div>
               )}
 
@@ -115,7 +115,9 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
               {info?.scrittura_tipica && (
                 <div className="info-box bg-slate-50 border-slate-200">
                   <h3 className="info-box-title text-slate-700">Scrittura Contabile Tipica</h3>
-                  <pre className="text-[13px] text-slate-800 font-mono whitespace-pre-wrap leading-[1.7] overflow-x-auto">{info.scrittura_tipica}</pre>
+                  <div className="overflow-x-auto -mx-4 px-4">
+                    <pre className="text-[12px] sm:text-[13px] text-slate-800 font-mono whitespace-pre-wrap leading-[1.8]">{info.scrittura_tipica}</pre>
+                  </div>
                 </div>
               )}
 
@@ -137,9 +139,9 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
 
               {/* Effetti */}
               {info && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="info-section-title mb-2.5">Impatto su...</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div className="space-y-2.5">
                     <div className="info-box bg-purple-50 border-purple-200">
                       <h4 className="info-box-title text-purple-700">Utile</h4>
                       <p className="text-[13px] leading-relaxed text-purple-900">{info.effetto_utile}</p>
@@ -158,7 +160,7 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
 
               {/* Interpretazione (solo def) */}
               {def?.interpretazione && !info && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="info-section-title">Interpretazione</h3>
                   <p className="info-text text-gray-600">{def.interpretazione}</p>
                 </div>
@@ -166,7 +168,7 @@ export default function InfoButton({ chiave, codice, infoId, size = 'sm', classN
 
               {/* Collegamenti */}
               {collegamenti.length > 0 && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="info-section-title mb-2">Voci Collegate</h3>
                   <div className="flex flex-wrap gap-2">
                     {collegamenti.map(col => (
